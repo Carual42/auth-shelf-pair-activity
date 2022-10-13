@@ -4,12 +4,14 @@ import './ShelfPage.css';
 
 function ShelfPage() {
   const [shelfList, setShelfList] = useState([]);
+  const [itemName, setItemName] = useState('');
+  const [itemURL, setItemURL] = useState('');
 
   useEffect(() => {
-    fetchPets();
+    fetchItems();
   }, []);
 
-  const fetchPets = () => {
+  const fetchItems = () => {
     axios.get('/api/shelf').then((response) => {
       setShelfList(response.data);
     }).catch((error) => {
@@ -18,8 +20,31 @@ function ShelfPage() {
     });
   }
 
+  const addNewItem = (e) => {
+     e.preventDefault();
+      axios.post('/api/shelf', { 
+        name: itemName,
+        url: itemURL
+       }).then(() => {
+        fetchItems();
+     }).catch((e) => {
+        console.log(e);
+        alert('Something went wrong.');
+     });
+  }
+  
+
+
+  
   return (
+    
     <div className="container">
+      <h2>Add a to shelf</h2>
+            <form onSubmit={addNewItem}>
+                <input value={itemName} onChange={(e) => setItemName(e.target.value)} type="text" placeholder='Name'/>
+                <input value={itemURL} onChange={(e) => setItemURL(e.target.value)} type="text" placeholder='URL'/>
+                <input type="submit" />
+            </form>
       <h2>Shelf</h2>
       <p>All of the available items can be seen here.</p>
       {
@@ -44,6 +69,6 @@ function ShelfPage() {
       <div className="clearfix"></div>
     </div>
   );
-}
+    }
 
 export default ShelfPage;

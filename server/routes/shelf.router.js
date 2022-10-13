@@ -18,8 +18,23 @@ router.get('/', (req, res) => {
 /**
  * Add an item for the logged in user to the shelf
  */
-router.post('/', (req, res) => {
-  // endpoint functionality
+ router.post('/', (req, res) => {
+  // console.log('/pet POST route');
+  console.log(req.body);
+  // console.log('is authenticated?', req.isAuthenticated());
+  // console.log('user', req.user);
+  if(req.isAuthenticated()) {
+      // all lowercase with singular names 
+      const queryText = `INSERT INTO "item" ("description", "image_url", "user_id")
+                         VALUES ($1, $2, $3)`;
+      pool.query(queryText, [req.body.name, req.body.url, req.user.id]).then(() => {
+          res.sendStatus(201);
+      }).catch((e) => {
+          res.sendStatus(500);
+      })
+  } else {
+      res.sendStatus(403); // Forbidden
+  }
 });
 
 /**
